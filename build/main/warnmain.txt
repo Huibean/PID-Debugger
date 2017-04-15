@@ -1,0 +1,22 @@
+missing module named _sha512 - imported by hashlib
+missing module named _sha256 - imported by hashlib
+missing module named _md5 - imported by hashlib
+missing module named _sha - imported by hashlib
+missing module named org - imported by pickle
+missing module named _subprocess - imported by subprocess
+missing module named msvcrt - imported by subprocess
+missing module named riscosenviron - imported by os
+missing module named riscospath - imported by os
+missing module named riscos - imported by os
+missing module named ce - imported by os
+missing module named _emx_link - imported by os
+missing module named os2 - imported by os
+missing module named nt - imported by os, ntpath
+missing module named 'org.python' - imported by copy
+missing module named 'PyQt5.QtChart' - imported by data_chart, nat_net_chart, serial_chart
+missing module named 'PyQt5.QtCore' - imported by log_window, nat_net_chart, data_chart, serial_chart
+missing module named 'serial.tools' - imported by serial_status
+missing module named serial - imported by nat_net_controller, dash_box, serial_status, log_window
+missing module named 'PyQt5.QtGui' - imported by main_window, dash_box, log_window, nat_net_chart, serial_chart
+missing module named 'PyQt5.QtWidgets' - imported by main_window, dash_box, message_manager, log_window, nat_net_chart, serial_chart
+missing module named PyQt5 - imported by /Users/huibean/Work/PID-Debugger/main.py

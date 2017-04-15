@@ -3,11 +3,15 @@ from PyQt5.QtGui import QIcon, QPalette, QColor
 
 import serial
 from serial_status import SerialStatus
+from message_manager import MessageManager
 
 class DashBox(QStackedWidget):
 
-    def __init__(self):
+    command = {'take_off': bytearray.fromhex("01"), "landing": bytearray.fromhex("02")}
+
+    def __init__(self, main_window):
         super().__init__()
+        self.main_window = main_window
         self.serial_connection = serial.Serial()
 
         self.init_unconnect_state_ui()
@@ -18,14 +22,9 @@ class DashBox(QStackedWidget):
         self.unconnect_state_widget = UnConnectedStateWidget(self)
         self.addWidget(self.unconnect_state_widget)
 
-
     def init_connected_state_ui(self):
         self.connected_state_widget = ConnectedStateWidget(self)
         self.addWidget(self.connected_state_widget)
-
-    def handle_active_select(self):
-        self.selected_device = self.device_select_box.currentData()
-        print("%s selected", self.selected_device)
 
     def update_ui(self):
         if self.serial_connection.isOpen():
@@ -79,6 +78,8 @@ class UnConnectedStateWidget(QWidget):
             self.dash_box.serial_connection.write(b"01")
             print(self.dash_box.serial_connection)
 
+            self.dash_box.main_window.nat_net_controller.serial = self.dash_box.serial_connection
+
             self.dash_box.update_ui()
 
         except Exception as e:
@@ -108,28 +109,42 @@ class ConnectedStateWidget(QWidget):
 
         self.init_pid_area()
         self.init_aircraft_controll_area()
+        self.init_system_controll_area()
 
-        self.disconnect_button = QPushButton("断开连接")
-        self.layout.addWidget(self.disconnect_button)
-        self.disconnect_button.clicked.connect(self.handle_disconnect)
 
     def handle_disconnect(self):
         self.dash_box.serial_connection.close()
         self.dash_box.update_ui()
+    
+    def init_system_controll_area(self):
+        self.system_controll_GroupBox = QGroupBox("控制")
+        layout = QVBoxLayout()
+
+        disconnect_button = QPushButton("断开连接")
+        layout.addWidget(disconnect_button)
+        disconnect_button.clicked.connect(self.handle_disconnect)
+
+        self.system_controll_GroupBox.setLayout(layout)
+        self.layout.addWidget(self.system_controll_GroupBox, 0, 2)
 
     def init_aircraft_controll_area(self):
-        self.controll_GroupBox = QGroupBox("控制") 
+        self.controll_GroupBox = QGroupBox("Aircraft 控制") 
         layout = QHBoxLayout()
 
         take_off_button = QPushButton("起飞")
         layout.addWidget(take_off_button)
+        take_off_button.clicked.connect(self.handle_take_off)
 
         landing_button = QPushButton("降落")
         layout.addWidget(landing_button)
+        landing_button.clicked.connect(self.handle_landing)
+
+        layout.addWidget(QPushButton("xx"))
+        layout.addWidget(QPushButton("xx"))
 
         self.controll_GroupBox.setLayout(layout)
 
-        self.layout.addWidget(self.controll_GroupBox, 1, 0)
+        self.layout.addWidget(self.controll_GroupBox, 1, 0, 1, 3)
 
     def init_pid_area(self):
         self.pid_GroupBox = QGroupBox("PID 调试")
@@ -146,8 +161,22 @@ class ConnectedStateWidget(QWidget):
             layout.addWidget(editor, index, 1)
 
         send_button = QPushButton("发送")
-
+        send_button.clicked.connect(self.handle_send_pid)
         layout.addWidget(send_button, 2, 2)
 
-        self.layout.addWidget(self.pid_GroupBox, 0, 0)
+        self.layout.addWidget(self.pid_GroupBox, 0, 0, 1, 2)
 
+    def handle_send_pid(self):
+        pid_values = []
+        for editor in self.pid_editors:
+            pid_values.append(editor.value())
+        print("发送pid:", pid_values)
+        self.dash_box.serial_connection.write("P{0}I{1}D{2}\r\n".format(*pid_values).encode('utf-8'))
+
+    def handle_take_off(self):
+        print("起飞")
+        self.dash_box.serial_connection.write(DashBox.command['take_off'])
+
+    def handle_landing(self):
+        print("降落")
+        self.dash_box.serial_connection.write(DashBox.command['landing'])

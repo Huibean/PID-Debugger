@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PID Debugger")
         self.resize(1200, 600)
         self.setMinimumSize(1200, 600)
-        self.layout = QGridLayout() 
+        self.layout = QGridLayout()
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 1)
         self.layout.setColumnMinimumWidth(0, 600)
@@ -44,11 +44,11 @@ class MainWindow(QMainWindow):
         self.show()
     
     def initDashBox(self):
-        self.dash_box = DashBox()
+        self.dash_box = DashBox(self)
         self.layout.addWidget(self.dash_box, 0, 0)
 
     def initLogWindow(self):
-        self.log_window = LogWindow()
+        self.log_window = LogWindow(self)
         self.layout.addWidget(self.log_window, 1, 0)
 
     def initNatNetChart(self):
@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.nat_net_chart, 0, 1)
 
     def initSerialChart(self):
-        self.serial_chart = SerialChart()
+        self.serial_chart = SerialChart(self.log_window)
         self.layout.addWidget(self.serial_chart, 1, 1)
 
     def initNatNet(self):

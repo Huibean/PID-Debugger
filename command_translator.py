@@ -26,8 +26,8 @@ class CommandTranslator():
             y = position[2]
             z = position[1]
             r = rotation[2]
-            print("ID:", str(index + 1))
-            print("坐标: ", x, y, z, r)
+            #  print("ID:", str(index + 1))
+            #  print("坐标: ", x, y, z, r)
 
             x = format(int(x * 100 + 500), "04x")
             y = format(int(y * 100 + 500), "04x")
