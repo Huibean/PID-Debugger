@@ -6,7 +6,6 @@ from data_chart import DataChart, DataLine, SeriesData
 
 from PyQt5.QtChart import QChartView
 
-
 class SerialChart(QWidget):
 
     chart_settings = [['x', (0, 0)], ['y', (0, 1)], ['z', (1, 0)], ['r', (1, 1)]]
@@ -41,18 +40,17 @@ class SerialChart(QWidget):
                     item['chart'].addSeries(item['line'])
                     item['chart'].axes(Qt.Vertical)
                     item['chart'].createDefaultAxes()
+                    item['chart'].scroll(10, 10)
+                    #  item['view'].resize(100, 50)
+
             self.data_index += 1
-
-
 
     def init_charts(self):
         for setting in SerialChart.chart_settings:
             scroll_area = QScrollArea()
             chart = DataChart()
             chart.setTitle(setting[0])
-            #  chart.scroll(1, 1)
             chart_view = QChartView(chart)
-            #  chart_view.setRenderHint(QPainter.Antialiasing)
             chart_view.setRubberBand(QChartView.HorizontalRubberBand)
             scroll_area.setWidget(chart_view)
             scroll_area.setAlignment(Qt.AlignRight)
@@ -63,5 +61,5 @@ class SerialChart(QWidget):
             self.layout.addWidget(scroll_area, *setting[1])
             line = DataLine()
             series_data = SeriesData()
-            self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data})
+            self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data, 'area': scroll_area})
 

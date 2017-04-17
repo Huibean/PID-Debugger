@@ -12,22 +12,18 @@ class NatNetController(object):
         self.positions_buffer = {}
         self.rotations_buffer = {}
 
-        self.body_size =  15
-
         self.last_send_data_time = datetime.datetime.now()
+
+        self.begin_time = datetime.datetime.now()
 
         self.last_update_buffer_id = 1
 
     def handle_buffer(self):
         d_time = datetime.datetime.now() - self.last_send_data_time 
         if d_time.microseconds >= NatNetController.frequency and self.last_update_buffer_id >= 1 and self.serial.isOpen():
-            print(d_time.microseconds)
-            #  print("handling positions:", self.positions_buffer)
-            #  print("handling rotations:", self.rotations_buffer)
             data = CommandTranslator.convert_hex_string("0000", self.positions_buffer, self.rotations_buffer)
             self.serial.write(data)
             self.last_send_data_time = datetime.datetime.now()
-            print(self.last_send_data_time)
 
     @staticmethod
     def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBodyCount, skeletonCount,

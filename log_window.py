@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QTextEdit, QComboBox
+from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QTextEdit, QComboBox, QFileDialog 
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtCore import QPointF, QTimer, Qt, QMargins
 
@@ -84,7 +84,6 @@ class UnConnectedStateWidget(QWidget):
         device_name = self.selected_device
         try:
             self.log_window.serial_connection = serial.Serial(device_name, self.selected_baudrate, timeout=0.05)
-            self.log_window.serial_connection.write(b"01")
             print(self.log_window.serial_connection)
 
             self.log_window.update_ui()
@@ -129,12 +128,32 @@ class ConnectedStateWidget(QWidget):
 
     def init_button_area(self):
         button_area = QWidget()
-        layout = QHBoxLayout()
+        layout = QVBoxLayout()
         button_area.setLayout(layout)
         self.layout.addWidget(button_area, 1)
         disconnect_button = QPushButton("断开连接")
         disconnect_button.clicked.connect(self.handle_disconnect)
         layout.addWidget(disconnect_button, 1)
+
+        save_data_button = QPushButton("保存")
+        save_data_button.clicked.connect(self.handle_save_data)
+        layout.addWidget(save_data_button, 1)
+
+    def handle_save_data(self):
+        file_url = QFileDialog.getSaveFileUrl(self, self.tr("保存数据"), "", self.tr("Project Files(*.txt)"))
+        project_path = file_url[0].path()
+        if (len(project_path) > 0):
+            print("保存路径 %s"%project_path)
+            try:
+                with open(project_path, "w+") as f:
+                    f.write(self.log_text.toPlainText())
+            except Exception as e:
+                raise e
+                error_message = "保存失败: " + str(e)
+                print(error_message)
+                MessageManager(error_message).error()
+        else:
+            print("用户取消操作")
         
     def update_data(self):
         currentData = self.log_window.serial_data.data

@@ -7,9 +7,6 @@ class DataChart(QChart):
     def __init__(self):
         super().__init__()
         self.legend().hide()
-        #  self.createDefaultAxes()
-    
-
 
 class DataLine(QLineSeries):
 
@@ -28,4 +25,3 @@ class SeriesData(object):
     def store(self, value):
         index = len(self.data)
         self.data.append(QPointF(index, value))
-        print(self.data)

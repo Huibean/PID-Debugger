@@ -75,10 +75,10 @@ class UnConnectedStateWidget(QWidget):
         device_name = self.selected_device
         try:
             self.dash_box.serial_connection = serial.Serial(device_name, self.selected_baudrate)
-            self.dash_box.serial_connection.write(b"01")
             print(self.dash_box.serial_connection)
 
             self.dash_box.main_window.nat_net_controller.serial = self.dash_box.serial_connection
+            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.5)
 
             self.dash_box.update_ui()
 
@@ -114,6 +114,7 @@ class ConnectedStateWidget(QWidget):
 
     def handle_disconnect(self):
         self.dash_box.serial_connection.close()
+        self.dash_box.main_window.nat_net_chart.update_data_timer.stop()
         self.dash_box.update_ui()
     
     def init_system_controll_area(self):
@@ -149,7 +150,7 @@ class ConnectedStateWidget(QWidget):
     def init_pid_area(self):
         self.pid_GroupBox = QGroupBox("PID 调试")
         layout = QGridLayout()
-        self.pid_editors = [QDoubleSpinBox(), QDoubleSpinBox(), QDoubleSpinBox()]
+        self.pid_editors = [CustomSpinBox(), CustomSpinBox(), CustomSpinBox()]
 
         layout.addWidget(QLabel("KP: "), 0, 0)
         layout.addWidget(QLabel("KI: "), 1, 0)
@@ -171,7 +172,8 @@ class ConnectedStateWidget(QWidget):
         for editor in self.pid_editors:
             pid_values.append(editor.value())
         print("发送pid:", pid_values)
-        self.dash_box.serial_connection.write("P{0}I{1}D{2}\r\n".format(*pid_values).encode('utf-8'))
+        message = PidMessage.convert_data(pid_values)
+        self.dash_box.serial_connection.write(message)
 
     def handle_take_off(self):
         print("起飞")
@@ -180,3 +182,30 @@ class ConnectedStateWidget(QWidget):
     def handle_landing(self):
         print("降落")
         self.dash_box.serial_connection.write(DashBox.command['landing'])
+
+class CustomSpinBox(QDoubleSpinBox):
+
+    def __init__(self):
+        super().__init__()
+        self.setDecimals(4)
+
+class PidMessage():
+    header = "7e7e"
+    footer = "0d0a"
+
+    @staticmethod
+    def convert_data(pid_values):
+        byte_length = 48
+        data = ''
+        for value in pid_values:
+            data += format(int(value * 10000), "06x")
+
+        pack_data = ''
+
+        for i in range(byte_length * 2 - len(data) - 8):
+            pack_data += '0'
+
+        hex_string = PidMessage.header + data + pack_data + PidMessage.footer
+
+        print("发送PID数据: ", hex_string)
+        return bytearray.fromhex(hex_string)

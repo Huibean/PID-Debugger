@@ -22,16 +22,12 @@ class NatNetChart(QWidget):
 
         self.update_data_timer = QTimer(self)
         self.update_data_timer.timeout.connect(self.update_data)
-        #  self.update_data_timer.start(0.1)
 
     def update_data(self):
         positions = self.main_window.nat_net_controller.positions_buffer
         rotations = self.main_window.nat_net_controller.rotations_buffer
 
         if len(positions) > 0:
-
-            #  print("update positions :%s"%positions[1])
-            #  print("update rotations :%s"%rotations[1])
 
             for index, item in enumerate(self.charts):
                 if index == 3:

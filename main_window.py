@@ -19,7 +19,6 @@ class MainWindow(QMainWindow):
         self.initNatNet()
 
     def initUI(self):
-        #  self.setGeometry(50, 50, 100, 100)
         self.setWindowTitle("PID Debugger")
         self.resize(1200, 600)
         self.setMinimumSize(1200, 600)
