@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.run = False
         self.initUI()
         self.initNatNet()
 
@@ -57,6 +58,9 @@ class MainWindow(QMainWindow):
     def initSerialChart(self):
         self.serial_chart = SerialChart(self.log_window)
         self.layout.addWidget(self.serial_chart, 1, 1)
+
+    def init_play_button(self):
+        pass
 
     def initNatNet(self):
         self.nat_net_controller = NatNetController(self)

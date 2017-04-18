@@ -11,7 +11,7 @@ class CommandTranslator():
         positions_hex = ''
         check_hex = int(command_hex, base=16)
 
-        range_size = 15
+        range_size = 10
         data_size = len(positions_buffer)
 
         for index in range(range_size):

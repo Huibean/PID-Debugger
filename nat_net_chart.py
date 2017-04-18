@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QScrollArea
+from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QScrollArea, QDockWidget
 from PyQt5.QtGui import QIcon, QPalette, QColor, QPainter
 from PyQt5.QtCore import QPointF, QTimer, Qt, QMargins
 
@@ -8,7 +8,7 @@ from PyQt5.QtChart import QChartView
 
 class NatNetChart(QWidget):
 
-    chart_settings = [['x', (0, 0)], ['y', (0, 1)], ['z', (1, 0)], ['r', (1, 1)]]
+    chart_settings = [['动捕x', (0, 0)], ['动捕y', (0, 1)], ['动捕z', (1, 0)], ['动捕r', (1, 1)]]
 
     def __init__(self, main_window):
         super().__init__()
@@ -55,7 +55,10 @@ class NatNetChart(QWidget):
             scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
             scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-            self.layout.addWidget(scroll_area, *setting[1])
+            dock_widget = QDockWidget()
+            dock_widget.setWidget(scroll_area)
+
+            self.layout.addWidget(dock_widget, *setting[1])
             line = DataLine()
             series_data = SeriesData()
             self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data})

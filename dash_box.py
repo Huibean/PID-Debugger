@@ -4,10 +4,11 @@ from PyQt5.QtGui import QIcon, QPalette, QColor
 import serial
 from serial_status import SerialStatus
 from message_manager import MessageManager
+from functools import partial
 
 class DashBox(QStackedWidget):
 
-    command = {'take_off': bytearray.fromhex("01"), "landing": bytearray.fromhex("02")}
+    command = {'take_off': "0001", "landing": "0002"}
 
     def __init__(self, main_window):
         super().__init__()
@@ -78,7 +79,6 @@ class UnConnectedStateWidget(QWidget):
             print(self.dash_box.serial_connection)
 
             self.dash_box.main_window.nat_net_controller.serial = self.dash_box.serial_connection
-            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.5)
 
             self.dash_box.update_ui()
 
@@ -100,6 +100,7 @@ class ConnectedStateWidget(QWidget):
 
     def __init__(self, dash_box):
         super().__init__()
+        self.run = False
         self.dash_box = dash_box
         self.initUI()
 
@@ -114,12 +115,17 @@ class ConnectedStateWidget(QWidget):
 
     def handle_disconnect(self):
         self.dash_box.serial_connection.close()
+        self.dash_box.main_window.nat_net_controller.send = False
         self.dash_box.main_window.nat_net_chart.update_data_timer.stop()
         self.dash_box.update_ui()
     
     def init_system_controll_area(self):
         self.system_controll_GroupBox = QGroupBox("控制")
         layout = QVBoxLayout()
+
+        self.play_button = QPushButton("发送并绘制")
+        layout.addWidget(self.play_button)
+        self.play_button.clicked.connect(self.toggle_send_location)
 
         disconnect_button = QPushButton("断开连接")
         layout.addWidget(disconnect_button)
@@ -132,20 +138,54 @@ class ConnectedStateWidget(QWidget):
         self.controll_GroupBox = QGroupBox("Aircraft 控制") 
         layout = QHBoxLayout()
 
-        take_off_button = QPushButton("起飞")
-        layout.addWidget(take_off_button)
-        take_off_button.clicked.connect(self.handle_take_off)
+        #  take_off_button = QPushButton("起飞")
+        #  layout.addWidget(take_off_button)
+        #  take_off_button.clicked.connect(self.handle_take_off)
 
-        landing_button = QPushButton("降落")
-        layout.addWidget(landing_button)
-        landing_button.clicked.connect(self.handle_landing)
+        #  landing_button = QPushButton("降落")
+        #  layout.addWidget(landing_button)
+        #  landing_button.clicked.connect(self.handle_landing)
 
-        layout.addWidget(QPushButton("xx"))
+        one_button = QPushButton("0x01")
+        layout.addWidget(one_button)
+        one_button.clicked.connect(partial(self.handle_command, "0001"))
+        two_button = QPushButton("0x02")
+        layout.addWidget(two_button)
+        two_button.clicked.connect(partial(self.handle_command, "0002"))
+        three_button = QPushButton("0x03")
+        layout.addWidget(three_button)
+        three_button.clicked.connect(partial(self.handle_command, "0003"))
+
         layout.addWidget(QPushButton("xx"))
 
         self.controll_GroupBox.setLayout(layout)
 
         self.layout.addWidget(self.controll_GroupBox, 1, 0, 1, 3)
+
+    def toggle_send_location(self):
+        if self.run:
+            self.dash_box.main_window.nat_net_controller.send = False
+            self.dash_box.main_window.nat_net_chart.update_data_timer.stop()
+            self.play_button.setText("发送&绘制")
+        else:
+            self.dash_box.main_window.nat_net_controller.send = True
+            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.5)
+            self.play_button.setText("暂停")
+
+        self.run = not self.run
+
+    def handle_command(self, command):
+        print("处理指令: ", command)
+        self.dash_box.main_window.nat_net_controller.command_buffer.append(command)
+
+    def handle_one(self):
+        self.dash_box.main_window.nat_net_controller.command_buffer.append("0001")
+
+    def handle_two(self):
+        self.dash_box.main_window.nat_net_controller.command_buffer.append("0002")
+
+    def handle_three(self):
+        self.dash_box.main_window.nat_net_controller.command_buffer.append("0003")
 
     def init_pid_area(self):
         self.pid_GroupBox = QGroupBox("PID 调试")
@@ -177,11 +217,11 @@ class ConnectedStateWidget(QWidget):
 
     def handle_take_off(self):
         print("起飞")
-        self.dash_box.serial_connection.write(DashBox.command['take_off'])
+        self.dash_box.main_window.nat_net_controller.command_buffer.append(DashBox.command['take_off'])
 
     def handle_landing(self):
         print("降落")
-        self.dash_box.serial_connection.write(DashBox.command['landing'])
+        self.dash_box.main_window.nat_net_controller.command_buffer.append(DashBox.command['landing'])
 
 class CustomSpinBox(QDoubleSpinBox):
 
@@ -195,7 +235,7 @@ class PidMessage():
 
     @staticmethod
     def convert_data(pid_values):
-        byte_length = 48
+        byte_length = 86
         data = ''
         for value in pid_values:
             data += format(int(value * 10000), "06x")
@@ -208,4 +248,6 @@ class PidMessage():
         hex_string = PidMessage.header + data + pack_data + PidMessage.footer
 
         print("发送PID数据: ", hex_string)
-        return bytearray.fromhex(hex_string)
+        message = bytearray.fromhex(hex_string)
+        print("字节长: ", len(message))
+        return message

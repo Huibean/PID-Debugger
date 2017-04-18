@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QScrollArea
+from PyQt5.QtWidgets import QWidget, QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QScrollArea, QDockWidget
 from PyQt5.QtGui import QIcon, QPalette, QColor, QPainter
 from PyQt5.QtCore import QPointF, QTimer, Qt, QMargins
 
@@ -8,7 +8,7 @@ from PyQt5.QtChart import QChartView
 
 class SerialChart(QWidget):
 
-    chart_settings = [['x', (0, 0)], ['y', (0, 1)], ['z', (1, 0)], ['r', (1, 1)]]
+    chart_settings = [['数传x', (0, 0)], ['数传y', (0, 1)], ['数传z', (1, 0)], ['数传r', (1, 1)]]
 
     def __init__(self, log_window):
         super().__init__()
@@ -40,8 +40,6 @@ class SerialChart(QWidget):
                     item['chart'].addSeries(item['line'])
                     item['chart'].axes(Qt.Vertical)
                     item['chart'].createDefaultAxes()
-                    item['chart'].scroll(10, 10)
-                    #  item['view'].resize(100, 50)
 
             self.data_index += 1
 
@@ -58,7 +56,10 @@ class SerialChart(QWidget):
             scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
             scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-            self.layout.addWidget(scroll_area, *setting[1])
+            dock_widget = QDockWidget()
+            dock_widget.setWidget(scroll_area)
+
+            self.layout.addWidget(dock_widget, *setting[1])
             line = DataLine()
             series_data = SeriesData()
             self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data, 'area': scroll_area})

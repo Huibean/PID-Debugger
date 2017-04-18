@@ -88,7 +88,6 @@ class UnConnectedStateWidget(QWidget):
 
             self.log_window.update_ui()
             self.log_window.start_receive_data()
-            self.log_window.main_window.serial_chart.update_data_timer.start(0.5)
             self.log_window.connected_state_widget.update_data_timer.start(0.5)
 
         except Exception as e:
@@ -109,6 +108,7 @@ class ConnectedStateWidget(QWidget):
 
     def __init__(self, log_window):
         super().__init__()
+        self.run = False
         self.log_window = log_window
         self.initUI()
         self.data_index = 0
@@ -131,13 +131,29 @@ class ConnectedStateWidget(QWidget):
         layout = QVBoxLayout()
         button_area.setLayout(layout)
         self.layout.addWidget(button_area, 1)
-        disconnect_button = QPushButton("断开连接")
-        disconnect_button.clicked.connect(self.handle_disconnect)
-        layout.addWidget(disconnect_button, 1)
+
+        self.play_button = QPushButton("绘制")
+        self.play_button.clicked.connect(self.toggle_play_button)
+        layout.addWidget(self.play_button, 1)
 
         save_data_button = QPushButton("保存")
         save_data_button.clicked.connect(self.handle_save_data)
         layout.addWidget(save_data_button, 1)
+
+        disconnect_button = QPushButton("断开连接")
+        disconnect_button.clicked.connect(self.handle_disconnect)
+        layout.addWidget(disconnect_button, 1)
+
+
+    def toggle_play_button(self):
+        if self.run:
+            self.log_window.main_window.serial_chart.update_data_timer.stop()
+            self.play_button.setText("绘制")
+        else:
+            self.log_window.main_window.serial_chart.update_data_timer.start(0.5)
+            self.play_button.setText("暂停")
+
+        self.run = not self.run
 
     def handle_save_data(self):
         file_url = QFileDialog.getSaveFileUrl(self, self.tr("保存数据"), "", self.tr("Project Files(*.txt)"))
@@ -179,7 +195,10 @@ class serialData(object):
     def receive(serial_connection, serial_data, stop_event):
         while (not stop_event.is_set()):
             if serial_connection.isOpen():
-                serial_data.handle_bytes(serial_connection.read())
+                try:
+                    serial_data.handle_bytes(serial_connection.read())
+                except Exception as e:
+                    raise e
 
     def handle_bytes(self, byte):
         data = byte.decode()
