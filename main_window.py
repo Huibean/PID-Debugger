@@ -70,3 +70,7 @@ class MainWindow(QMainWindow):
 
         self.nat_net_streaming_client.run()
 
+    def close(self):
+        print("close nat net client")
+        self.nat_net_streaming_client.stop()
+        return 0

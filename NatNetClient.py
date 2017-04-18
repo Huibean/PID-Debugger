@@ -16,6 +16,7 @@ class NatNetClient:
     def __init__( self, controller=None ):
 
         self.controller = controller
+        self.receive_stop = False
 
         # Change this value to the IP address of the NatNet server.
         self.serverIPAddress = "192.168.0.134"
@@ -355,7 +356,7 @@ class NatNetClient:
                 offset += self.__unpackSkeletonDescription( data[offset:] )
             
     def __dataThreadFunction( self, socket ):
-        while True:
+        while not self.receive_stop:
             # Block for input
             data, addr = socket.recvfrom( 32768 ) # 32k byte buffer size
             if( len( data ) > 0 ):
@@ -442,3 +443,6 @@ class NatNetClient:
 
         self.sendCommand( self.NAT_REQUEST_MODELDEF, "", self.commandSocket, (self.serverIPAddress, self.commandPort) )
         print("Client Running...")
+
+    def stop(self):
+        self.receive_stop = True
