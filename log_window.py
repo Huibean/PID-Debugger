@@ -202,7 +202,7 @@ class serialData(object):
 
     def handle_bytes(self, byte):
         data = byte.decode()
-        if re.match('\d|\.|\,', data):
+        if re.match('\d|\.|\,|-', data):
             self.buffer += data
         elif re.match('\n|\r', data):
             if len(self.buffer):
