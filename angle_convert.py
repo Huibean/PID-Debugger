@@ -23,7 +23,3 @@ class AngleConvert():
             return [roll, pitch, yaw]
         else:
             return [ i * 180 / math.pi for i in [roll, pitch, yaw]]
-
-
-result = AngleConvert.quaternion_to_euler((0.49846121668815613, 0.5050917863845825, 0.5173382759094238, 0.4783095121383667))
-print(result)

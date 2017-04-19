@@ -4,6 +4,7 @@ class CommandTranslator():
 
     @staticmethod
     def convert_hex_string(command, positions_buffer, rotations_buffer):
+        print("处理坐标: ", positions_buffer)
         pack_position = (0, 0, 0)
         pack_rotation = (0, 0, 0)
 
@@ -15,7 +16,7 @@ class CommandTranslator():
         data_size = len(positions_buffer)
 
         for index in range(range_size):
-            if index + 1 < data_size:
+            if index + 1 <= data_size:
                 position = positions_buffer[index + 1]
                 rotation = rotations_buffer[index + 1]
             else:
@@ -26,8 +27,10 @@ class CommandTranslator():
             y = position[2]
             z = position[1]
             r = rotation[2]
-            #  print("ID:", str(index + 1))
-            #  print("坐标: ", x, y, z, r)
+
+            if index + 1 <= data_size:
+                print(position)
+                print("x: {0} y: {1} z: {2} r: {3}".format(x, y, z, r))
 
             x = format(int(x * 100 + 500), "04x")
             y = format(int(y * 100 + 500), "04x")
