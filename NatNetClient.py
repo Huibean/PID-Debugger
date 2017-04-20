@@ -3,8 +3,8 @@ import struct
 from threading import Thread
 
 def trace( *args ):
-    pass
-    #  print( "".join(map(str,args)) )
+    #pass
+    print( "".join(map(str,args)) )
 
 # Create structs for reading various object types to speed up parsing.
 Vector3 = struct.Struct( '<fff' )
@@ -19,7 +19,7 @@ class NatNetClient:
         self.receive_stop = False
 
         # Change this value to the IP address of the NatNet server.
-        self.serverIPAddress = "192.168.0.134"
+        self.serverIPAddress = "127.0.0.1"#"192.168.0.134"
 
         # This should match the multicast address listed in Motive's streaming settings.
         self.multicastAddress = "239.255.42.99"
