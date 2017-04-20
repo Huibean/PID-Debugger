@@ -211,4 +211,3 @@ class serialData(object):
                 self.buffer = ''
         else:
             self.buffer = ''
-

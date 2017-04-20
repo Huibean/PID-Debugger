@@ -31,15 +31,16 @@ class NatNetChart(QWidget):
 
             for index, item in enumerate(self.charts):
                 if index == 3:
-                    pass
+                    item['data'].store(rotations[1][2])
                 else:
-                    item['line'] = DataLine()
                     item['data'].store(positions[1][index])
-                    item['line'].append(item['data'].data)
-                    item['chart'].removeAllSeries()
-                    item['chart'].addSeries(item['line'])
-                    item['chart'].axes(Qt.Vertical)
-                    item['chart'].createDefaultAxes()
+
+                item['line'] = DataLine()
+                item['line'].append(item['data'].data)
+                item['chart'].removeAllSeries()
+                item['chart'].addSeries(item['line'])
+                item['chart'].axes(Qt.Vertical)
+                item['chart'].createDefaultAxes()
 
     def init_charts(self):
         for setting in NatNetChart.chart_settings:

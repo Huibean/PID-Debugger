@@ -8,7 +8,7 @@ from PyQt5.QtChart import QChartView
 
 class SerialChart(QWidget):
 
-    chart_settings = [['数传x', (0, 0)], ['数传y', (0, 1)], ['数传z', (1, 0)], ['数传r', (1, 1)]]
+    chart_settings = [['数传x', (0, 0)], ['数传y', (0, 1)], ['数传z', (1, 0)], ['数传Yaw', (1, 1)]]
 
     def __init__(self, log_window):
         super().__init__()
@@ -30,16 +30,13 @@ class SerialChart(QWidget):
         if len(currentData) >= self.data_index + 1:
             positions = currentData
             for index, item in enumerate(self.charts):
-                if index == 3:
-                    pass
-                else:
-                    item['line'] = DataLine()
-                    item['data'].store(float(currentData[self.data_index][index]))
-                    item['line'].append(item['data'].data)
-                    item['chart'].removeAllSeries()
-                    item['chart'].addSeries(item['line'])
-                    item['chart'].axes(Qt.Vertical)
-                    item['chart'].createDefaultAxes()
+                item['line'] = DataLine()
+                item['data'].store(float(currentData[self.data_index][index]))
+                item['line'].append(item['data'].data)
+                item['chart'].removeAllSeries()
+                item['chart'].addSeries(item['line'])
+                item['chart'].axes(Qt.Vertical)
+                item['chart'].createDefaultAxes()
 
             self.data_index += 1
 

@@ -42,11 +42,9 @@ class NatNetController(object):
     @staticmethod
     def receiveRigidBodyFrame( controller, id, position, rotation ):
         #  print( "Received frame for rigid body", id )
-        #  print( "position: ", position )
-        #  print( "rotation: ", rotation )
-        #  result = AngleConvert.quaternion_to_euler(rotation)
-        #  print(result)
+        print( "position: ", position )
+        print( "rotation: ", rotation )
         controller.positions_buffer[id] = position
-        controller.rotations_buffer[id] = rotation
+        controller.rotations_buffer[id] = AngleConvert.quaternion_to_euler(rotation)
         controller.last_update_buffer_id = id
         controller.handle_buffer()
