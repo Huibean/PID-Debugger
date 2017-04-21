@@ -36,7 +36,7 @@ class NatNetChart(QWidget):
                     item['data'].store(positions[1][index])
 
                 item['line'] = DataLine()
-                item['line'].append(item['data'].data)
+                item['line'].append(item['data'].data[-100:])
                 item['chart'].removeAllSeries()
                 item['chart'].addSeries(item['line'])
                 item['chart'].axes(Qt.Vertical)
@@ -62,4 +62,4 @@ class NatNetChart(QWidget):
             self.layout.addWidget(dock_widget, *setting[1])
             line = DataLine()
             series_data = SeriesData()
-            self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data})
+            self.charts.append({'chart': chart, 'line': line, 'view': chart_view, 'data': series_data, 'name': setting[0]})

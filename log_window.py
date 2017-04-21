@@ -150,7 +150,7 @@ class ConnectedStateWidget(QWidget):
             self.log_window.main_window.serial_chart.update_data_timer.stop()
             self.play_button.setText("绘制")
         else:
-            self.log_window.main_window.serial_chart.update_data_timer.start(0.5)
+            self.log_window.main_window.serial_chart.update_data_timer.start(0.1)
             self.play_button.setText("暂停")
 
         self.run = not self.run

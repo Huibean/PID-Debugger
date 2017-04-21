@@ -32,7 +32,7 @@ class SerialChart(QWidget):
             for index, item in enumerate(self.charts):
                 item['line'] = DataLine()
                 item['data'].store(float(currentData[self.data_index][index]))
-                item['line'].append(item['data'].data)
+                item['line'].append(item['data'].data[-100:])
                 item['chart'].removeAllSeries()
                 item['chart'].addSeries(item['line'])
                 item['chart'].axes(Qt.Vertical)

@@ -16,6 +16,7 @@ class DataLine(QLineSeries):
         line_pen = self.pen() 
         line_pen.setWidth(0.5)
         self.setPen(line_pen)
+        self.setUseOpenGL(True)
 
 class SeriesData(object):
 

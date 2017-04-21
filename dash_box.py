@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QComboBox, QListWidget, QListWidgetItem, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QGroupBox, QLabel, QTextEdit, QLineEdit, QSpinBox, QDoubleSpinBox
+from PyQt5.QtWidgets import QWidget, QComboBox, QListWidget, QListWidgetItem, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QGroupBox, QLabel, QTextEdit, QLineEdit, QSpinBox, QDoubleSpinBox, QFileDialog
 from PyQt5.QtGui import QIcon, QPalette, QColor
 
 import serial
 from serial_status import SerialStatus
 from message_manager import MessageManager
 from functools import partial
+import json
 
 class DashBox(QStackedWidget):
 
@@ -127,6 +128,10 @@ class ConnectedStateWidget(QWidget):
         layout.addWidget(self.play_button)
         self.play_button.clicked.connect(self.toggle_send_location)
 
+        save_data_button = QPushButton("保存")
+        save_data_button.clicked.connect(self.handle_save_data)
+        layout.addWidget(save_data_button)
+
         disconnect_button = QPushButton("断开连接")
         layout.addWidget(disconnect_button)
         disconnect_button.clicked.connect(self.handle_disconnect)
@@ -161,6 +166,27 @@ class ConnectedStateWidget(QWidget):
         self.controll_GroupBox.setLayout(layout)
 
         self.layout.addWidget(self.controll_GroupBox, 1, 0, 1, 3)
+
+    def handle_save_data(self):
+        file_url = QFileDialog.getSaveFileUrl(self, self.tr("保存数据"), "", self.tr("Project Files(*.json)"))
+        project_path = file_url[0].path()
+        if (len(project_path) > 0):
+            print("保存路径 %s"%project_path)
+            try:
+                with open(project_path, "w+") as f:
+                    data = {0: [], 1: [], 2: [], 3: []}
+                    for index, item in enumerate(self.dash_box.main_window.nat_net_chart.charts):
+                        for value in item['data'].data:
+                            data[index].append(value.y())
+                    f.write(json.dumps(data))
+
+            except Exception as e:
+                raise e
+                error_message = "保存失败: " + str(e)
+                print(error_message)
+                MessageManager(error_message).error()
+        else:
+            print("用户取消操作")
 
     def toggle_send_location(self):
         if self.run:
