@@ -3,7 +3,6 @@ class AngleConvert():
 
     @staticmethod
     def quaternion_to_euler(q, type="angle"):
-        print("转换四元数: ", q)
         qx, qy, qz, qw = q
 
         t0 = 2*(qw*qx + qy*qz)
@@ -24,8 +23,6 @@ class AngleConvert():
 
         if type == "radian":
             result = [roll, pitch, yaw]
-            print("Roll: {0}, Pitch: {1}, Yaw: {2} \ radian".format(*result))
         else:
             result = [ i * 180 / math.pi for i in [roll, pitch, yaw]]
-            print("Roll: {0}, Pitch: {1}, Yaw: {2}".format(*result))
         return result

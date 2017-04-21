@@ -169,13 +169,13 @@ class ConnectedStateWidget(QWidget):
             self.play_button.setText("发送&绘制")
         else:
             self.dash_box.main_window.nat_net_controller.send = True
-            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.5)
+            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.1)
             self.play_button.setText("暂停")
 
         self.run = not self.run
 
     def handle_command(self, command):
-        print("处理指令: ", command)
+        #print("处理指令: ", command)
         self.dash_box.main_window.nat_net_controller.command_buffer.append(command)
 
     def handle_one(self):
