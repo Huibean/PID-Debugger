@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QComboBox, QListWidget, QListWidgetItem, QStackedWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QAction, QPushButton, QGroupBox, QLabel, QTextEdit, QLineEdit, QSpinBox, QDoubleSpinBox, QFileDialog
 from PyQt5.QtGui import QIcon, QPalette, QColor
+from PyQt5.QtCore import pyqtSignal
 
 import serial
 from serial_status import SerialStatus
@@ -113,7 +114,6 @@ class ConnectedStateWidget(QWidget):
         self.init_aircraft_controll_area()
         self.init_system_controll_area()
 
-
     def handle_disconnect(self):
         self.dash_box.serial_connection.close()
         self.dash_box.main_window.nat_net_controller.send = False
@@ -143,25 +143,11 @@ class ConnectedStateWidget(QWidget):
         self.controll_GroupBox = QGroupBox("Aircraft 控制") 
         layout = QHBoxLayout()
 
-        #  take_off_button = QPushButton("起飞")
-        #  layout.addWidget(take_off_button)
-        #  take_off_button.clicked.connect(self.handle_take_off)
 
-        #  landing_button = QPushButton("降落")
-        #  layout.addWidget(landing_button)
-        #  landing_button.clicked.connect(self.handle_landing)
-
-        one_button = QPushButton("0x01")
-        layout.addWidget(one_button)
-        one_button.clicked.connect(partial(self.handle_command, "0001"))
-        two_button = QPushButton("0x02")
-        layout.addWidget(two_button)
-        two_button.clicked.connect(partial(self.handle_command, "0002"))
-        three_button = QPushButton("0x03")
-        layout.addWidget(three_button)
-        three_button.clicked.connect(partial(self.handle_command, "0003"))
-
-        layout.addWidget(QPushButton("xx"))
+        for item in ["0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008"]:
+            button = QPushButton(item)
+            layout.addWidget(button)
+            button.clicked.connect(partial(self.handle_command, item))
 
         self.controll_GroupBox.setLayout(layout)
 
@@ -201,7 +187,7 @@ class ConnectedStateWidget(QWidget):
         self.run = not self.run
 
     def handle_command(self, command):
-        #print("处理指令: ", command)
+        print("处理指令: ", command)
         self.dash_box.main_window.nat_net_controller.command_buffer.append(command)
 
     def handle_one(self):
