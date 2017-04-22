@@ -42,6 +42,19 @@ class MainWindow(QMainWindow):
         self.initSerialChart()
 
         self.show()
+
+    def keyPressEvent(self, event):
+        print(event.key())
+        key = event.key()
+        handlers = {81: [0, 0.1], 87: [1, 0.1], 69: [2, 0.1], 65: [0, -0.1], 83: [1, -0.1], 68: [2, -0.1]}
+        handler = handlers[key]
+        print(handler)
+        editor = self.dash_box.connected_state_widget.pid_editors[handler[0]]
+        current_value = editor.value()
+        current_value += handler[1]
+        editor.setValue(current_value)
+
+        self.dash_box.connected_state_widget.handle_send_pid()
     
     def initDashBox(self):
         self.dash_box = DashBox(self)

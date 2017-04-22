@@ -143,7 +143,6 @@ class ConnectedStateWidget(QWidget):
         self.controll_GroupBox = QGroupBox("Aircraft 控制") 
         layout = QHBoxLayout()
 
-
         for item in ["0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008"]:
             button = QPushButton(item)
             layout.addWidget(button)
@@ -190,15 +189,6 @@ class ConnectedStateWidget(QWidget):
         print("处理指令: ", command)
         self.dash_box.main_window.nat_net_controller.command_buffer.append(command)
 
-    def handle_one(self):
-        self.dash_box.main_window.nat_net_controller.command_buffer.append("0001")
-
-    def handle_two(self):
-        self.dash_box.main_window.nat_net_controller.command_buffer.append("0002")
-
-    def handle_three(self):
-        self.dash_box.main_window.nat_net_controller.command_buffer.append("0003")
-
     def init_pid_area(self):
         self.pid_GroupBox = QGroupBox("PID 调试")
         layout = QGridLayout()
@@ -222,7 +212,7 @@ class ConnectedStateWidget(QWidget):
     def handle_send_pid(self):
         pid_values = []
         for editor in self.pid_editors:
-            pid_values.append(editor.value())
+            pid_values.append(editor.value() + 10)
         print("发送pid:", pid_values)
         message = PidMessage.convert_data(pid_values)
         self.dash_box.serial_connection.write(message)
