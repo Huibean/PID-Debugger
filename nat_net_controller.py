@@ -10,6 +10,7 @@ class NatNetController(object):
     def __init__(self, main_window):
         self.main_window = main_window
         self.send = False
+        self.send_time = False
         self.serial = serial.Serial()
         self.positions_buffer = {}
         self.rotations_buffer = {}
@@ -39,6 +40,12 @@ class NatNetController(object):
     def frequency_handle_buffer(controller, handle_buffer_stop):
         while not handle_buffer_stop.is_set():
             if controller.serial.isOpen():
+                if not controller.send_time:
+                    current_time = datetime.datetime.now()
+                    controller.serial.write(CommandTranslator.time_stamp(current_time))
+                    controller.send_time = True
+                    time.sleep(0.125)
+                
                 command = "0000"
                 if len(controller.command_buffer) > 0:
                     command = controller.command_buffer[0]

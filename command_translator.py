@@ -3,6 +3,25 @@ class CommandTranslator():
     footer = "0d"
 
     @staticmethod
+    def time_stamp(current_time):
+        time_string = current_time.strftime("%Y %m %d %H %M %S.%f")
+        data = time_string.split(" ")
+        hex_string = '' 
+        pack_string = ''
+        for item in data[:-1]:
+            hex_string += format(int(item), "04x")
+
+        hex_string += format(int(float(data[-1:][0]) * 100000), "08x")
+
+        for item in range(82 - len(bytearray.fromhex(hex_string))):
+            pack_string += '00'
+
+        result = bytearray.fromhex("eb90" + hex_string + pack_string + "0d0a")
+        print("发送时间戳: ", data, " ",result)
+        print("字节长度: ", len(result))
+        return result
+
+    @staticmethod
     def convert_hex_string(command, positions_buffer, rotations_buffer):
         print("处理坐标: ", positions_buffer)
         pack_position = (0, 0, 0)
