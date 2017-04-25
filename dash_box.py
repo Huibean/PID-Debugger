@@ -158,7 +158,7 @@ class ConnectedStateWidget(QWidget):
         if (len(project_path) > 0):
             print("保存路径 %s"%project_path)
             try:
-                with open(project_path, "w+") as f:
+                with open(project_path[1:], "w+") as f:
                     f.write(json.dumps(self.dash_box.main_window.nat_net_controller.data))
 
             except Exception as e:

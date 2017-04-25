@@ -37,6 +37,17 @@ class NatNetController(object):
             self.last_send_data_time = datetime.datetime.now()
 
     @staticmethod
+    def store_handle_buffer(controller, store_data_stop):
+        while not store_data_stop.is_set():
+            for id in controller.positions_buffer.keys():
+                if id in controller.data.keys():
+                    controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id]]) 
+                else:
+                    controller.data[id] = []
+            time.sleep(0.01)
+
+
+    @staticmethod
     def frequency_handle_buffer(controller, handle_buffer_stop):
         while not handle_buffer_stop.is_set():
             if controller.serial.isOpen():
@@ -72,8 +83,3 @@ class NatNetController(object):
         controller.positions_buffer[id] = current_position
         controller.rotations_buffer[id] = current_rotation
         controller.last_update_buffer_id = id
-
-        if id in controller.data.keys():
-            controller.data[id].append([*current_position, *current_rotation]) 
-        else:
-            controller.data[id] = []

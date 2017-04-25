@@ -88,8 +88,13 @@ class MainWindow(QMainWindow):
         self.handle_buffer_Thread = Thread( target = NatNetController.frequency_handle_buffer, args = (self.nat_net_controller, self.handle_buffer_stop))
         self.handle_buffer_Thread.start()
 
+        self.store_data_stop = Event()
+        self.store_data_Thread = Thread( target = NatNetController.store_handle_buffer, args = (self.nat_net_controller, self.store_data_stop))
+        self.store_data_Thread.start()
+
     def close(self):
         print("close all threads")
         self.nat_net_streaming_client.stop()
         self.handle_buffer_stop.set()
+        self.store_data_stop.set()
         return 0
