@@ -3,6 +3,7 @@ from PyQt5.QtGui import QIcon, QPalette, QColor
 
 from NatNetClient import NatNetClient
 from nat_net_controller import NatNetController
+from threading import Thread, Event
 
 from dash_box import DashBox
 from log_window import LogWindow
@@ -83,7 +84,12 @@ class MainWindow(QMainWindow):
 
         self.nat_net_streaming_client.run()
 
+        self.handle_buffer_stop = Event()
+        self.handle_buffer_Thread = Thread( target = NatNetController.frequency_handle_buffer, args = (self.nat_net_controller, self.handle_buffer_stop))
+        self.handle_buffer_Thread.start()
+
     def close(self):
-        print("close nat net client")
+        print("close all threads")
         self.nat_net_streaming_client.stop()
+        self.handle_buffer_stop.set()
         return 0

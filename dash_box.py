@@ -159,11 +159,7 @@ class ConnectedStateWidget(QWidget):
             print("保存路径 %s"%project_path)
             try:
                 with open(project_path, "w+") as f:
-                    data = {0: [], 1: [], 2: [], 3: []}
-                    for index, item in enumerate(self.dash_box.main_window.nat_net_chart.charts):
-                        for value in item['data'].data:
-                            data[index].append(value.y())
-                    f.write(json.dumps(data))
+                    f.write(json.dumps(self.dash_box.main_window.nat_net_controller.data))
 
             except Exception as e:
                 raise e
