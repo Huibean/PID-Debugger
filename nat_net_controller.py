@@ -40,7 +40,6 @@ class NatNetController(object):
     def store_data(controller, store_data_stop):
         while not store_data_stop.is_set():
             if controller.send:
-                print("store data")
                 for id in controller.positions_buffer.keys():
                     if id in controller.data.keys():
                         controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id], datetime.datetime.now().strftime("%H:%M:%S.%f")]) 
