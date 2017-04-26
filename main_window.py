@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         self.handle_buffer_Thread.start()
 
         self.store_data_stop = Event()
-        self.store_data_Thread = Thread( target = NatNetController.store_handle_buffer, args = (self.nat_net_controller, self.store_data_stop))
+        self.store_data_Thread = Thread( target = NatNetController.store_data, args = (self.nat_net_controller, self.store_data_stop))
         self.store_data_Thread.start()
 
     def close(self):

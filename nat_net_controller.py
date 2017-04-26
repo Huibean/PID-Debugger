@@ -37,35 +37,39 @@ class NatNetController(object):
             self.last_send_data_time = datetime.datetime.now()
 
     @staticmethod
-    def store_handle_buffer(controller, store_data_stop):
+    def store_data(controller, store_data_stop):
         while not store_data_stop.is_set():
-            for id in controller.positions_buffer.keys():
-                if id in controller.data.keys():
-                    controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id]]) 
-                else:
-                    controller.data[id] = []
-            time.sleep(0.01)
+            if controller.send:
+                print("store data")
+                for id in controller.positions_buffer.keys():
+                    if id in controller.data.keys():
+                        controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id]]) 
+                    else:
+                        controller.data[id] = []
+                time.sleep(0.01)
 
 
     @staticmethod
     def frequency_handle_buffer(controller, handle_buffer_stop):
         while not handle_buffer_stop.is_set():
-            if controller.serial.isOpen():
-                if not controller.send_time:
-                    current_time = datetime.datetime.now()
-                    controller.serial.write(CommandTranslator.time_stamp(current_time))
-                    controller.send_time = True
-                    time.sleep(0.125)
-                
-                command = "0000"
-                if len(controller.command_buffer) > 0:
-                    command = controller.command_buffer[0]
-                    print("发送命令: ", command)
-                    del controller.command_buffer[0]
+            if controller.send:
+                print("handle buffer")
+                if controller.serial.isOpen():
+                    if not controller.send_time:
+                        current_time = datetime.datetime.now()
+                        controller.serial.write(CommandTranslator.time_stamp(current_time))
+                        controller.send_time = True
+                        time.sleep(0.125)
+                    
+                    command = "0000"
+                    if len(controller.command_buffer) > 0:
+                        command = controller.command_buffer[0]
+                        print("发送命令: ", command)
+                        del controller.command_buffer[0]
 
-                data = CommandTranslator.convert_hex_string(command, controller.positions_buffer, controller.rotations_buffer)
-                controller.serial.write(data)
-            time.sleep(0.125)
+                    data = CommandTranslator.convert_hex_string(command, controller.positions_buffer, controller.rotations_buffer)
+                    controller.serial.write(data)
+                time.sleep(0.125)
 
     @staticmethod
     def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBodyCount, skeletonCount,
