@@ -43,7 +43,7 @@ class NatNetController(object):
                 print("store data")
                 for id in controller.positions_buffer.keys():
                     if id in controller.data.keys():
-                        controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id]]) 
+                        controller.data[id].append([*controller.positions_buffer[id], *controller.rotations_buffer[id], datetime.datetime.now().strftime("%H:%M:%S.%f")]) 
                     else:
                         controller.data[id] = []
                 time.sleep(0.01)

@@ -7,6 +7,7 @@ from serial_status import SerialStatus
 from message_manager import MessageManager
 from functools import partial
 import json
+import platform
 
 class DashBox(QStackedWidget):
 
@@ -157,8 +158,13 @@ class ConnectedStateWidget(QWidget):
         project_path = file_url[0].path()
         if (len(project_path) > 0):
             print("保存路径 %s"%project_path)
+            if platform.system() == 'Darwin':
+                path = project_path
+            else:
+                path = project_path[1:]
+
             try:
-                with open(project_path[1:], "w+") as f:
+                with open(path, "w+") as f:
                     f.write(json.dumps(self.dash_box.main_window.nat_net_controller.data))
 
             except Exception as e:
