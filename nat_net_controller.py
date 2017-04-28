@@ -14,6 +14,8 @@ class NatNetController(object):
         self.serial = serial.Serial()
         self.positions_buffer = {}
         self.rotations_buffer = {}
+        self.positions_track = {}
+        self.speed_buffer = {}
         self.command_buffer = []
         self.data = {}
 
@@ -66,7 +68,7 @@ class NatNetController(object):
                         print("发送命令: ", command)
                         del controller.command_buffer[0]
 
-                    data = CommandTranslator.convert_hex_string(command, controller.positions_buffer, controller.rotations_buffer)
+                    data = CommandTranslator.convert_hex_string(command, controller.positions_buffer, controller.rotations_buffer, controller.speed_buffer)
                     controller.serial.write(data)
                 time.sleep(0.125)
 
@@ -85,4 +87,25 @@ class NatNetController(object):
         current_rotation = AngleConvert.quaternion_to_euler(rotation)
         controller.positions_buffer[id] = current_position
         controller.rotations_buffer[id] = current_rotation
+
+        track_item = [*current_position, datetime.datetime.now()]
+
+        if id in controller.positions_track.keys():
+            controller.positions_track[id].append(track_item)
+            if len(controller.positions_track[id]) == 11:
+                del controller.positions_track[id][0]
+                controller.positions_track[id]
+                for i in range(3):
+                    p1 = controller.positions_track[id][-1]
+                    p0 = controller.positions_track[id][0]
+                    dtime = p1[3] - p0[3]
+                    distance = p1[i] - p0[i]
+                    speed = distance / dtime.total_seconds()
+                    controller.speed_buffer[id][i] = speed
+                print(controller.speed_buffer[id])
+
+        else:
+            controller.positions_track[id] = [track_item]
+            controller.speed_buffer[id] = [0, 0, 0]
+
         controller.last_update_buffer_id = id

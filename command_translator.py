@@ -22,10 +22,11 @@ class CommandTranslator():
         return result
 
     @staticmethod
-    def convert_hex_string(command, positions_buffer, rotations_buffer):
+    def convert_hex_string(command, positions_buffer, rotations_buffer, speed_buffer):
         print("处理坐标: ", positions_buffer)
         pack_position = (0, 0, 0)
         pack_rotation = (0, 0, 0)
+        pack_speed = (0, 0, 0)
 
         command_hex = command
         positions_hex = ''
@@ -38,19 +39,23 @@ class CommandTranslator():
             if index + 1 <= data_size:
                 position = positions_buffer[index + 1]
                 rotation = rotations_buffer[index + 1]
+                speed = speed_buffer[index + 1]
                 print("Roll: {0}, Pitch: {1}, Yaw: {2} \ radian".format(*rotation))
             else:
                 position = pack_position
                 rotation = pack_rotation
+                speed = pack_speed
 
             x = position[0]
             y = position[2]
             z = position[1]
             yaw = rotation[2]
+            x_speed = speed[0]
+            y_speed = speed[1]
 
             if index + 1 <= data_size:
                 print(position)
-                print("x: {0} y: {1} z: {2} yaw: {3}".format(x, y, z, yaw))
+                print("x: {0} y: {1} z: {2} yaw: {3} x_speed: {4} y_speed: {5}".format(x, y, z, yaw, x_speed, y_speed))
 
             x = format(int(x * 100 + 500), "04x")
             y = format(int(y * 100 + 500), "04x")
@@ -58,10 +63,13 @@ class CommandTranslator():
 
             yaw = format(int((yaw + 360) * 100), "04x")
 
-            position_hex = x + y + z + yaw
+            x_speed = format(int((x_speed + 100) * 100), "04x")
+            y_speed = format(int((y_speed + 100) * 100), "04x")
+
+            position_hex = x + y + z + yaw + x_speed + y_speed
             positions_hex += position_hex
 
-            for item in [x, y, z, yaw]:
+            for item in [x, y, z, yaw, x_speed, y_speed]:
                 check_hex += int(item[0:2], base=16)
                 check_hex += int(item[2:4], base=16)
 
