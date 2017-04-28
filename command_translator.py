@@ -40,7 +40,6 @@ class CommandTranslator():
                 position = positions_buffer[index + 1]
                 rotation = rotations_buffer[index + 1]
                 speed = speed_buffer[index + 1]
-                print("Roll: {0}, Pitch: {1}, Yaw: {2} \ radian".format(*rotation))
             else:
                 position = pack_position
                 rotation = pack_rotation
