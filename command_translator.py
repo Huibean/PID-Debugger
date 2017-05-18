@@ -50,7 +50,7 @@ class CommandTranslator():
             z = position[1]
             yaw = rotation[2]
             x_speed = speed[0]
-            y_speed = speed[1]
+            y_speed = speed[2]
 
             if index + 1 <= data_size:
                 print(position)
