@@ -178,11 +178,11 @@ class ConnectedStateWidget(QWidget):
     def toggle_send_location(self):
         if self.run:
             self.dash_box.main_window.nat_net_controller.send = False
-            self.dash_box.main_window.nat_net_chart.update_data_timer.stop()
+            #  self.dash_box.main_window.nat_net_chart.update_data_timer.stop()
             self.play_button.setText("发送&绘制")
         else:
             self.dash_box.main_window.nat_net_controller.send = True
-            self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.1)
+            #  self.dash_box.main_window.nat_net_chart.update_data_timer.start(0.1)
             self.play_button.setText("暂停")
 
         self.run = not self.run
